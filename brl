@@ -1,0 +1,75 @@
+import tkinter as tk
+
+# Estado inicial do jogo.
+def print_status(status):
+    print("Lado esquerdo:", status['left'])
+    print("Lado direito:", status['right'])
+    print()
+
+# Função para mover os itens.
+def move(status, items):
+    for item in items:
+        if item in status['left']:
+            status['left'].remove(item)
+            status['right'].append(item)
+        elif item in status['right']:
+            status['right'].remove(item)
+            status['left'].append(item)
+
+def check_game_over(status):
+    # Verifica se todos os itens estão no lado direito
+    if len(status['left']) == 0:
+        print('você ganhou')
+    # Verifica se o lobo e o bode estão no lado direito (condição insegura)
+    elif 'lobo' in status['right'] and 'bode' in status['right'] and 'homem' not in status['right']:
+        return True
+    # Verifica se a cabra e o repolho estão no lado direito (condição insegura)
+    elif 'repolho' in status['right'] and 'bode' in status['right'] and 'homem' not in status['right']:
+        return True
+    # Verifica se o lobo e o bode estão no lado esquerdo (condição insegura)
+    elif 'lobo' in status['left'] and 'bode' in status['left'] and 'homem' not in status['left']:
+        return True
+    # Verifica se a cabra e o repolho estão no lado esquerdo (condição insegura)
+    elif 'repolho' in status['left'] and 'bode' in status['left'] and 'homem' not in status['left']:
+        return True
+    else:
+        return False
+
+def button_click(item):
+    selected_items.append(item)
+    if len(selected_items) == 2:
+        move(status, selected_items)
+        print_status(status)
+        if check_game_over(status):
+            print("você perdeu")
+            root.quit()
+        selected_items.clear()
+
+def enviar_click():
+    if 'homem' in selected_items:
+        move(status, ['homem'])
+        print_status(status)
+        if check_game_over(status):
+            print("você perdeu")
+            root.quit()
+    else:
+        print("Você não pode enviar apenas um.")
+
+root = tk.Tk()
+root.title("Problema do bode, lobo e repolho")
+
+status = {
+    'left': ['bode', 'lobo', 'repolho', 'homem'],
+    'right': []
+}
+
+selected_items = []
+
+for item in status['left']:
+    button = tk.Button(root, text=item, command=lambda i=item: button_click(i))
+    button.pack()
+
+enviar_button = tk.Button(root, text="Enviar", command=enviar_click)
+enviar_button.pack()
+
+root.mainloop()
